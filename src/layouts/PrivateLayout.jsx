@@ -4,9 +4,11 @@ import { Outlet } from 'react-router-dom'
 
 const PrivateLayout = () => {
   return (
-    <div>
+    <div className='flex w-screen h-screen'>
       <Sidebar />
-      <Outlet />
+      <main className='flex w-full overflow-y-scroll items-center justify-center'>
+        <Outlet />
+      </main>
     </div>
   )
 }
