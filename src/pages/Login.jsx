@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../media/logo.png'
+import googleLogo from '../media/google_logo.png'
 
 const Login = () => {
   return (
@@ -42,8 +43,13 @@ const Login = () => {
           <div className='my-2 font-bold'>
             ------------ O ------------
           </div>
-          <div className='bg-red-500 p-2 w-96 text-center text-white rounded-lg shadow-lg hover:bg-red-400 hover:cursor-pointer'>
-            <button>Continue with Google</button>
+          <div className='bg-gray-400 p-2 w-96 text-center text-gray-900 rounded-lg shadow-lg hover:bg-gray-500 hover:cursor-pointer'>
+            <button>
+              <div className="flex items-center justify-center">
+                <img className='h-5 w-5' src={googleLogo} alt="logo-google" />
+                <span className='mx-4'>Continue with Google</span>
+              </div>
+            </button>
           </div>
         </div>
       </form>
