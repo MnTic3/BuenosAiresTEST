@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import logo from '../media/logo.png'
 import googleLogo from '../media/google_logo.png'
+import LogoImg from 'components/LogoImg'
 
 const Login = () => {
   return (
     <div className='flex flex-col w-full justify-center items-center mx-2'>
-      <img src={logo} alt='logo' className='h-44 rounded-full items-center block' />
+      <LogoImg/>
       <h2 className='m-3 text-3xl font-extrabold text-gray-800'>Buenos Aires</h2>
       <form className='mt-8'>
         <div>
