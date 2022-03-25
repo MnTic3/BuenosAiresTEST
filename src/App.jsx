@@ -11,6 +11,8 @@ import AuthLayout from 'layouts/AuthLayout';
 import Vehicles from 'pages/admin/Vehicles';
 import Clients from 'pages/admin/Clients';
 import { DarkModeContext } from 'context/DarkMode';
+import Users from 'pages/admin/Users';
+import Profile from 'pages/admin/Profile';
 
 function App() {
 
@@ -31,6 +33,8 @@ function App() {
           </Route>
           <Route element={<PrivateLayout />}>
             <Route path='/admin/vehicles' element={<Vehicles />} />
+            <Route path='/admin/profile' element={<Profile />} />
+            <Route path='/admin/users' element={<Users />} />
             <Route path='/admin/clients' element={<Clients />} />
             <Route path="/admin" element={<AdminIndex />} />
           </Route>

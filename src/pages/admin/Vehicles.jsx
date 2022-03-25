@@ -22,7 +22,6 @@ const listVehiclesBack = [
 
 const Vehicles = () => {
 
-  //const [colorBtn, setColorBtn] = useState("green")
   const [isClicked, setIsClicked] = useState(false)
   const [msgButton, setMsgButton] = useState("")
   const [vehicles, setVehicles] = useState(listVehiclesBack)
@@ -34,7 +33,6 @@ const Vehicles = () => {
       setMsgButton("Create")
     }
   }, [isClicked])
-
 
 
   return (
