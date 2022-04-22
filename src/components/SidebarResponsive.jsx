@@ -12,10 +12,10 @@ const SidebarResponsive = () => {
             {
                 showNav &&
                 <div>
-                    <RouteResponsive name={"Perfil"} icon={"fa-solid fa-user"} route={"#"} />
+                    <RouteResponsive name={"Perfil"} icon={"fa-solid fa-user"} route={"/admin/profile"} />
                     <RouteResponsive name={"Vehiculos"} icon={"fas fa-car"} route={"/admin/vehicles"} />
                     <RouteResponsive name={"Clientes"} icon={"fas fa-users"} route={"/admin/clients"} />
-                    <RouteResponsive name={"Usuarios"} icon={"fa-solid fa-screwdriver-wrench"} route={"admin/"} />
+                    <RouteResponsive name={"Usuarios"} icon={"fa-solid fa-screwdriver-wrench"} route={"admin/users"} />
                 </div>
             }
         </div>

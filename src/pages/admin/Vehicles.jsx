@@ -1,30 +1,17 @@
+import { useVehicleList } from 'context/VehiclesList';
 import React, { useEffect, useRef, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const listVehiclesBack = [
-  {
-    vehName: "Corola",
-    vehModel: 2020,
-    vehBrand: "Toyota",
-  },
-  {
-    vehName: "Sandero",
-    vehModel: 2015,
-    vehBrand: "Renault",
-  },
-  {
-    vehName: "Mazda 3",
-    vehModel: 2019,
-    vehBrand: "Mazda",
-  },
-]
+
 
 const Vehicles = () => {
 
+  const { vehicleList } = useVehicleList()
+
   const [isClicked, setIsClicked] = useState(false)
   const [msgButton, setMsgButton] = useState("")
-  const [vehicles, setVehicles] = useState(listVehiclesBack)
+  const [todosCarros, setTodosCarros] = useState(vehicleList)
 
   useEffect(() => {
     if (isClicked) {
@@ -33,7 +20,6 @@ const Vehicles = () => {
       setMsgButton("Create")
     }
   }, [isClicked])
-
 
   return (
     <div className='flex flex-col w-full h-full justify-start'>
@@ -51,11 +37,13 @@ const Vehicles = () => {
         isClicked ? (
           <FormVehicle
             setShowAll={setIsClicked}
-            listVeh={vehicles}
-            setListVehicles={setVehicles} />
+            listVeh={todosCarros}
+            setVechicleList={setTodosCarros} />
         ) : (
           <TableVehicles
-            listVehiclesBack={vehicles} />
+            listVehiclesBack={todosCarros}
+            setVechicleList={setTodosCarros}
+          />
         )
 
       }
@@ -69,7 +57,7 @@ const Vehicles = () => {
   )
 }
 
-const FormVehicle = ({ setShowAll, listVeh, setListVehicles }) => {
+const FormVehicle = ({ setShowAll, listVeh, setVechicleList }) => {
 
   const form = useRef(null)
 
@@ -83,7 +71,7 @@ const FormVehicle = ({ setShowAll, listVeh, setListVehicles }) => {
     })
 
     setShowAll(false)
-    setListVehicles([
+    setVechicleList([
       ...listVeh,
       {
         vehName: newVehicle.name,
@@ -152,34 +140,139 @@ const FormVehicle = ({ setShowAll, listVeh, setListVehicles }) => {
   )
 }
 
-const TableVehicles = ({ listVehiclesBack }) => {
+const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
+
+  const form = useRef(null)
+
+  useEffect(() => {
+    setVechicleList(listVehiclesBack)
+  }, [listVehiclesBack])
+
+
+  const editSubmit = (e) => {
+    e.preventDefault()
+    const fd = new FormData(form.current)
+    fd.forEach((value, key) => {
+      console.log("Key: ", key, "Value:", value);
+    })
+  }
 
   return (
-    <div className='flex flex-col items-center'>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Model</th>
-            <th>Brand</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            listVehiclesBack.map((vehicle) => {
-              return (
-                <tr>
-                  <td>{vehicle.vehName}</td>
-                  <td>{vehicle.vehModel}</td>
-                  <td>{vehicle.vehBrand}</td>
-                </tr>
-              )
-            })
-          }
+    <div className='flex flex-col items-center w-full'>
+      <form ref={form} onSubmit={editSubmit} className='flex flex-col w-4/5'>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Model</th>
+              <th>Brand</th>
+              <th>Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              listVehiclesBack.map((vehicle) => {
+                return (
+                  <RowVehicle key={vehicle._id} vehicle={vehicle} allVehicles={listVehiclesBack} setVechicles={setVechicleList} />
+                )
+              })
+            }
 
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </form>
     </div>
+  )
+}
+
+
+const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
+  const [isEdit, setIsEdit] = useState()
+
+  const [id, setId] = useState(vehicle._id)
+  const [name, setName] = useState(vehicle.vehName)
+  const [model, setModel] = useState(vehicle.vehModel)
+  const [brand, setBrand] = useState(vehicle.vehBrand)
+
+  const sendData = () => {
+
+    if (name || model && brand) {
+      vehicle.vehName = name
+      vehicle.vehModel = model
+      vehicle.vehBrand = brand
+      setIsEdit(!isEdit)
+    } else {
+      setIsEdit(true)
+    }
+  }
+
+  const deleteData = () => {
+
+    const newList = allVehicles.filter((vehicle) => {
+      return vehicle._id != id
+    })
+
+    console.log(newList);
+
+    setVechicles(newList)
+
+  }
+
+  return (
+    <tr>
+      <td>
+        {isEdit ?
+          <input placeholder={vehicle.vehName} type='text' className='border border-gray-400 p-0.5 m-0.5 shadow-md rounded-sm focus:outline-none' onChange={(e) => setName(e.target.value)} />
+          :
+          vehicle.vehName}
+      </td>
+      <td>
+        {isEdit ?
+          <input placeholder={vehicle.vehModel} type='number' max={2023} min={1992} className='border border-gray-400 p-0.5 m-0.5 shadow-md rounded-sm' onChange={(e) => setModel(e.target.value)} />
+          :
+          vehicle.vehModel}
+      </td>
+      <td>
+        {isEdit ?
+          <select
+            name="brand"
+            placeholder={vehicle.vehBrand}
+            className='border border-gray-400 bg-white p-0.5 m-0.5 shadow-md rounded-sm cursor-pointer'
+            onChange={(e) => setBrand(e.target.value)}
+          >
+            <option value="Toyota">Toyota</option>
+            <option value="Renault">Renault</option>
+            <option value="Mazda">Mazda</option>
+            <option value="Ford">Ford</option>
+            <option value="BMW">BMW</option>
+          </select>
+
+          :
+          vehicle.vehBrand}
+      </td>
+      <td>
+        <div className='flex w-full justify-around'>
+          {/*
+            PUT/PATCH DIFERENCIAS:
+            PUT ACTUALZIA TODOS LOS CAMPOS DE UN REGISTRO
+            PATCH ACTUALIZA UNO O VARIOS
+          
+          */}
+          {
+            isEdit ?
+              <i onClick={sendData} className="fa-solid fa-circle-check text-green-700 hover:text-green-500 cursor-pointer" />
+              :
+              <i onClick={() => setIsEdit(!isEdit)} className="fa-solid fa-pencil text-yellow-700 hover:text-yellow-500 cursor-pointer" />
+          }
+          {
+            isEdit ?
+              <i onClick={() => setIsEdit(!isEdit)} className="fa-solid fa-circle-xmark text-red-700 hover:text-red-500 cursor-pointer" />
+              :
+              <i onClick={deleteData} className="fa-solid fa-trash text-red-700 hover:text-red-500 cursor-pointer" />
+          }
+        </div>
+      </td>
+    </tr>
   )
 }
 
