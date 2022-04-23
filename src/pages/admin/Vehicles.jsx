@@ -1,9 +1,8 @@
+import { Dialog, Tooltip } from '@mui/material';
 import { useVehicleList } from 'context/VehiclesList';
 import React, { useEffect, useRef, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
 
 const Vehicles = () => {
 
@@ -142,11 +141,17 @@ const FormVehicle = ({ setShowAll, listVeh, setVechicleList }) => {
 
 const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
 
+  const [search, setSearch] = useState('')
+  const [filterList, setFilterList] = useState(listVehiclesBack)
+
   const form = useRef(null)
 
   useEffect(() => {
-    setVechicleList(listVehiclesBack)
-  }, [listVehiclesBack])
+    setFilterList(listVehiclesBack.filter((element) => {
+      return JSON.stringify(element).toLowerCase().includes(search.toLowerCase())
+    }))
+
+  }, [search, listVehiclesBack])
 
 
   const editSubmit = (e) => {
@@ -159,6 +164,12 @@ const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
 
   return (
     <div className='flex flex-col items-center w-full'>
+      <input
+        type="text"
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder='Search'
+        className='border border-gray-700 mb-3 px-2 focus:outline-none '
+      />
       <form ref={form} onSubmit={editSubmit} className='flex flex-col w-4/5'>
         <table className='table'>
           <thead>
@@ -171,7 +182,7 @@ const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
           </thead>
           <tbody>
             {
-              listVehiclesBack.map((vehicle) => {
+              filterList.map((vehicle) => {
                 return (
                   <RowVehicle key={vehicle._id} vehicle={vehicle} allVehicles={listVehiclesBack} setVechicles={setVechicleList} />
                 )
@@ -189,14 +200,15 @@ const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
 const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
   const [isEdit, setIsEdit] = useState()
 
-  const [id, setId] = useState(vehicle._id)
+  const [id] = useState(vehicle._id)
   const [name, setName] = useState(vehicle.vehName)
   const [model, setModel] = useState(vehicle.vehModel)
   const [brand, setBrand] = useState(vehicle.vehBrand)
+  const [openDialog, setOpenDialog] = useState(false)
 
   const sendData = () => {
 
-    if (name || model && brand) {
+    if (name || model || brand) {
       vehicle.vehName = name
       vehicle.vehModel = model
       vehicle.vehBrand = brand
@@ -209,12 +221,14 @@ const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
   const deleteData = () => {
 
     const newList = allVehicles.filter((vehicle) => {
-      return vehicle._id != id
+      return vehicle._id !== id
     })
 
     console.log(newList);
 
-    setVechicles(newList)
+    setVechicles(newList);
+
+    setOpenDialog(false);
 
   }
 
@@ -222,13 +236,23 @@ const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
     <tr>
       <td>
         {isEdit ?
-          <input placeholder={vehicle.vehName} type='text' className='border border-gray-400 p-0.5 m-0.5 shadow-md rounded-sm focus:outline-none' onChange={(e) => setName(e.target.value)} />
+          <input
+            placeholder={vehicle.vehName}
+            type='text'
+            className='border border-gray-400 p-0.5 m-0.5 shadow-md rounded-sm focus:outline-none'
+            onChange={(e) => setName(e.target.value)}
+          />
           :
           vehicle.vehName}
       </td>
       <td>
         {isEdit ?
-          <input placeholder={vehicle.vehModel} type='number' max={2023} min={1992} className='border border-gray-400 p-0.5 m-0.5 shadow-md rounded-sm' onChange={(e) => setModel(e.target.value)} />
+          <input
+            placeholder={vehicle.vehModel}
+            type='number' max={2023} min={1992}
+            className='border border-gray-400 p-0.5 m-0.5 shadow-md rounded-sm'
+            onChange={(e) => setModel(e.target.value)}
+          />
           :
           vehicle.vehModel}
       </td>
@@ -260,17 +284,53 @@ const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
           */}
           {
             isEdit ?
-              <i onClick={sendData} className="fa-solid fa-circle-check text-green-700 hover:text-green-500 cursor-pointer" />
+              <Tooltip title="Done" arrow>
+
+                <i
+                  onClick={sendData}
+                  className="fa-solid fa-circle-check text-green-700 hover:text-green-500 cursor-pointer" />
+              </Tooltip>
               :
-              <i onClick={() => setIsEdit(!isEdit)} className="fa-solid fa-pencil text-yellow-700 hover:text-yellow-500 cursor-pointer" />
+              <Tooltip title="Edit" arrow>
+                <i
+                  onClick={() => setIsEdit(!isEdit)}
+                  className="fa-solid fa-pencil text-yellow-700 hover:text-yellow-500 cursor-pointer" />
+              </Tooltip>
           }
           {
             isEdit ?
-              <i onClick={() => setIsEdit(!isEdit)} className="fa-solid fa-circle-xmark text-red-700 hover:text-red-500 cursor-pointer" />
+              <Tooltip title="Cancel" arrow>
+                <i
+                  onClick={() => setIsEdit(!isEdit)}
+                  className="fa-solid fa-circle-xmark text-red-700 hover:text-red-500 cursor-pointer" />
+              </Tooltip>
               :
-              <i onClick={deleteData} className="fa-solid fa-trash text-red-700 hover:text-red-500 cursor-pointer" />
+              <Tooltip title="Delete" arrow>
+                <i
+                  onClick={() => setOpenDialog(true)}
+                  className="fa-solid fa-trash text-red-700 hover:text-red-500 cursor-pointer" />
+              </Tooltip>
           }
         </div>
+        <Dialog open={openDialog}>
+          <h1
+            className='mx-5 my-4 font-semibold'
+          >
+            Do you want to delete the current item?
+          </h1>
+          <div className='flex justify-around my-4'>
+            <button
+              onClick={() => deleteData()}
+              className='px-5 py-2 bg-indigo-600 rounded-md text-white  hover:bg-indigo-500 font-semibold'>
+              Confirm
+            </button>
+            <button
+              onClick={() => setOpenDialog(false)}
+              className='px-5 py-2 bg-gray-600 rounded-md text-white  hover:bg-gray-500 font-semibold'>
+              Cancel
+            </button>
+          </div>
+        </Dialog>
       </td>
     </tr>
   )
