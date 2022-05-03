@@ -1,33 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from 'components/Sidebar'
 import SidebarResponsive from 'components/SidebarResponsive'
 import { VehiclesListContext } from 'context/VehiclesList'
 import { Outlet } from 'react-router-dom'
-import { nanoid } from 'nanoid'
+import { getAllVehicles } from 'pages/admin/Vehicle/utils/api'
 
 const PrivateLayout = () => {
 
-  const [vehicleList, setVechicleList] = useState([
-    {
-      _id: nanoid(),
-      vehName: "Corola",
-      vehModel: 2020,
-      vehBrand: "Toyota",
-    },
-    {
-      _id: nanoid(),
-      vehName: "Sandero",
-      vehModel: 2015,
-      vehBrand: "Renault",
-    },
-    {
-      _id: nanoid(),
-      vehName: "Mazda 3",
-      vehModel: 2019,
-      vehBrand: "Mazda",
-    },
-  ])
-  
+  const [vehicleList, setVechicleList] = useState([])
+
+  useEffect(() => {
+    getVehicles()
+  }, [])
+
+  const getVehicles = async () => {
+    setVechicleList(await getAllVehicles());
+  }
+
   return (
     <VehiclesListContext.Provider value={{ vehicleList, setVechicleList }}>
       <div className='flex w-screen h-screen'>

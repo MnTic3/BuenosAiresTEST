@@ -2,21 +2,25 @@ import { useVehicleList } from 'context/VehiclesList'
 import { useState, useRef, useEffect } from 'react'
 import RowVehicle from './RowVehicle'
 
-export const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
+export const TableVehicles = ({listVehiclesBack}) => {
 
     const { vehicleList } = useVehicleList()
+    console.log(listVehiclesBack, "--------------");
 
     const [search, setSearch] = useState('')
-    const [filterList, setFilterList] = useState(listVehiclesBack)
+    const [filterList, setFilterList] = useState(vehicleList)
 
     const form = useRef(null)
 
     useEffect(() => {
-        setFilterList(listVehiclesBack.filter((element) => {
+        setFilterList(vehicleList)
+    }, [vehicleList,])
+
+    useEffect(() => {
+        setFilterList(vehicleList.filter((element) => {
             return JSON.stringify(element).toLowerCase().includes(search.toLowerCase())
         }))
-
-    }, [search, listVehiclesBack])
+    }, [search, vehicleList])
 
 
     const editSubmit = (e) => {
@@ -51,7 +55,7 @@ export const TableVehicles = ({ listVehiclesBack, setVechicleList }) => {
                             {
                                 filterList.map((vehicle) => {
                                     return (
-                                        <RowVehicle key={vehicle._id} vehicle={vehicle} allVehicles={listVehiclesBack} setVechicles={setVechicleList} />
+                                        <RowVehicle key={vehicle._id} vehicle={vehicle} allVehicles={filterList} setVechicles={setFilterList} />
                                     )
                                 })
                             }

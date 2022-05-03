@@ -1,27 +1,27 @@
-import { useVehicleList } from 'context/VehiclesList';
+import axios from 'axios';
 import { useRef } from 'react'
 import { toast } from 'react-toastify';
+import { createVehicle } from './utils/api';
 
 export const FormVehicle = ({ setShowAll, listVeh, setVechicleList }) => {
 
     const form = useRef(null)
-    const sendBackEnd = (e) => {
+
+    const sendBackEnd = async (e) => {
         e.preventDefault()
         const fd = new FormData(form.current)
+
         let newVehicle = {}
         fd.forEach((value, key) => {
             newVehicle[key] = value
         })
+        try {
+            createVehicle(newVehicle)
+            toast.success("Succesfull")
+        } catch (error) {
+            toast.error("Error")
+        }
         setShowAll(false)
-        setVechicleList([
-            ...listVeh,
-            {
-                vehName: newVehicle.name,
-                vehModel: newVehicle.model,
-                vehBrand: newVehicle.brand,
-            }
-        ])
-        toast.success("Agregado correctamente")
     }
 
     return (

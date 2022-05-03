@@ -4,14 +4,28 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FormVehicle } from './FormVehicle';
 import { TableVehicles } from './TableVehicles';
+import { getAllVehicles } from './utils/api';
 
 const Vehicles = () => {
 
-  const { vehicleList } = useVehicleList()
-
   const [isClicked, setIsClicked] = useState(false)
   const [msgButton, setMsgButton] = useState("")
-  const [todosCarros, setTodosCarros] = useState(vehicleList)
+  const [todosCarros, setTodosCarros] = useState([])
+  //debería crear un estado para que al momento de agregar un nuevo vehiculo
+  //este cambie y se vuelva a renderizar la lista de los vehiculos.
+  //deployQuery, setDeployQuery
+
+  //Realmente la captura de los vehiculos (api getAllVehicles) debería estar ejecutandose en el PrivateLayout o aquí????
+  //lo digo porque al momento que se vuelve a renderizar la sección de vehiculos, se borran y no vuelven a cargar
+  //los vehiculos
+
+  useEffect(() => {
+    getVehicles()
+  }, [])
+
+  const getVehicles = async () => {
+    setTodosCarros(await getAllVehicles());
+  }
 
   useEffect(() => {
     if (isClicked) {
