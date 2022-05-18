@@ -1,41 +1,43 @@
 import axios from "axios"
 
-export const getAllVehicles = async () => {
-
-    let vehicles = []
-
+export const getAllVehicles = async (success, error) => {
     const options = {
         method: "GET",
-        url: 'http://localhost:5000/vehicles'
+        url: 'http://localhost:5000/vehicles/'
     }
-
     await axios
         .request(options)
-        .then(function (response) {
-            vehicles = response.data
-        })
-        .catch(function (err) {
-            console.error(err);
-        })
+        .then(success)
+        .catch(error)
 
-        return vehicles
 }
 
-export const createVehicle = async (newVehicle) => {
+export const createVehicle = async (data, success, error) => {
     const options = {
         method: "POST",
-        url: "http://localhost:5000/vehicle/create",
+        url: "http://localhost:5000/vehicles/",
         headers: { 'Content-Type': 'application/json' },
-        data: {
-            vehName: newVehicle.name,
-            vehModel: newVehicle.model,
-            vehBrand: newVehicle.brand
-        }
+        data
     }
 
-    await axios.request(options).then(function (response) {
-        console.log(response.data);
-    }).catch(function (err) {
-        console.error(err);
-    })
+    await axios.request(options).then(success).catch(error)
+}
+
+export const editOneVehicle = async (id, data, success, error) => {
+    const options = {
+        method: "PATCH",
+        url: `http://localhost:5000/vehicles/${id}/`,
+        headers: { 'Content-Type': 'application/json' },
+        data
+    }
+    await axios.request(options).then(success).catch(error)
+}
+
+export const deleteVehicle = async (id, success, error) => {
+    const options = {
+        method: "DELETE",
+        url: `http://localhost:5000/vehicles/${id}/`,
+        headers: { 'Content-Type': 'application/json' }
+    }
+    await axios.request(options).then(success).catch(error)
 }

@@ -1,27 +1,28 @@
-import { useVehicleList } from 'context/VehiclesList'
 import { useState, useRef, useEffect } from 'react'
 import RowVehicle from './RowVehicle'
 
-export const TableVehicles = ({listVehiclesBack}) => {
-
-    const { vehicleList } = useVehicleList()
-    console.log(listVehiclesBack, "--------------");
+export const TableVehicles = ({ allVehicles, fetchVehicles }) => {
 
     const [search, setSearch] = useState('')
-    const [filterList, setFilterList] = useState(vehicleList)
-
+    const [vehicles, setVehicles] = useState([])
+    const [filterList, setFilterList] = useState([])
+    const [deployQuery, setDeployQuery] = useState(false)
     const form = useRef(null)
 
-    useEffect(() => {
-        setFilterList(vehicleList)
-    }, [vehicleList,])
+    useEffect(()=>{
+        console.log("cambié");
+    }, [deployQuery])
 
     useEffect(() => {
-        setFilterList(vehicleList.filter((element) => {
+        setVehicles(allVehicles)
+    }, [allVehicles, deployQuery])
+
+
+    useEffect(() => {
+        setFilterList(vehicles.filter((element) => {
             return JSON.stringify(element).toLowerCase().includes(search.toLowerCase())
         }))
-    }, [search, vehicleList])
-
+    }, [search, vehicles])
 
     const editSubmit = (e) => {
         e.preventDefault()
@@ -30,7 +31,6 @@ export const TableVehicles = ({listVehiclesBack}) => {
             console.log("Key: ", key, "Value:", value);
         })
     }
-
 
     return (
         <div className='flex flex-col items-center w-full'>
@@ -55,7 +55,12 @@ export const TableVehicles = ({listVehiclesBack}) => {
                             {
                                 filterList.map((vehicle) => {
                                     return (
-                                        <RowVehicle key={vehicle._id} vehicle={vehicle} allVehicles={filterList} setVechicles={setFilterList} />
+                                        <RowVehicle
+                                            key={vehicle._id}
+                                            vehicle={vehicle}
+                                            setDeployQuery={setDeployQuery}
+                                            deployQuery={deployQuery}
+                                        />
                                     )
                                 })
                             }

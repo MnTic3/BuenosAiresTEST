@@ -1,33 +1,49 @@
 import { Dialog, Tooltip } from '@mui/material';
 import { useState } from 'react'
-import { deleteData } from './utils/api';
+import { toast } from 'react-toastify';
+import { deleteVehicle, editOneVehicle } from './utils/api';
 
-const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
+const RowVehicle = ({ vehicle, setDeployQuery, deployQuery }) => {
     const [isEdit, setIsEdit] = useState()
 
-    const [id] = useState(vehicle._id)
     const [name, setName] = useState(vehicle.vehName)
     const [model, setModel] = useState(vehicle.vehModel)
     const [brand, setBrand] = useState(vehicle.vehBrand)
     const [openDialog, setOpenDialog] = useState(false)
 
-    const sendData = () => {
-        if (name || model || brand) {
-            vehicle.vehName = name
-            vehicle.vehModel = model
-            vehicle.vehBrand = brand
-            setIsEdit(!isEdit)
-        } else {
-            setIsEdit(true)
-        }
+    const sendData = async (id) => {
+        await editOneVehicle(
+            id,
+            {
+                vehName: name,
+                vehModel: model,
+                vehBrand: brand
+            },
+            (response) => {
+                toast.success("It was edited");
+                setIsEdit(!isEdit);
+                setDeployQuery(true);
+            },
+            (err) => {
+                toast.error("Error");
+            }
+        )
     }
 
-    const deleteData = () => {
-        const newList = allVehicles.filter((vehicle) => {
-            return vehicle._id !== id
-        })
-        setVechicles(newList);
-        setOpenDialog(false);
+    const deleteData = async (id) => {
+        await deleteVehicle(
+            id,
+            (response) => {
+                toast.success("It was delete");
+                setOpenDialog(false);
+                setDeployQuery(true);
+            },
+            (err) => {
+                console.error(err);
+                toast.error("Error");
+            }
+        );
+
     }
 
 
@@ -74,17 +90,11 @@ const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
             </td>
             <td>
                 <div className='flex w-full justify-around'>
-                    {/*
-              PUT/PATCH DIFERENCIAS:
-              PUT ACTUALZIA TODOS LOS CAMPOS DE UN REGISTRO
-              PATCH ACTUALIZA UNO O VARIOS
-            
-            */}
                     {
                         isEdit ?
                             <Tooltip title="Done" arrow>
                                 <i
-                                    onClick={sendData}
+                                    onClick={() => sendData(vehicle._id)}
                                     className="fa-solid fa-circle-check text-green-700 hover:text-green-500 cursor-pointer" />
                             </Tooltip>
                             :
@@ -117,7 +127,7 @@ const RowVehicle = ({ vehicle, allVehicles, setVechicles }) => {
                     </h1>
                     <div className='flex justify-around my-4'>
                         <button
-                            onClick={() => deleteData()}
+                            onClick={() => deleteData(vehicle._id)}
                             className='px-5 py-2 bg-indigo-600 rounded-md text-white  hover:bg-indigo-500 font-semibold'>
                             Confirm
                         </button>

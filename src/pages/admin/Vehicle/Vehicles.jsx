@@ -1,4 +1,3 @@
-import { useVehicleList } from 'context/VehiclesList';
 import React, { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,7 +9,9 @@ const Vehicles = () => {
 
   const [isClicked, setIsClicked] = useState(false)
   const [msgButton, setMsgButton] = useState("")
-  const [todosCarros, setTodosCarros] = useState([])
+  const [allVehicles, setAllVehicles] = useState([])
+  const [deployQuery, setDeployQuery] = useState(true)
+
   //debería crear un estado para que al momento de agregar un nuevo vehiculo
   //este cambie y se vuelva a renderizar la lista de los vehiculos.
   //deployQuery, setDeployQuery
@@ -19,13 +20,24 @@ const Vehicles = () => {
   //lo digo porque al momento que se vuelve a renderizar la sección de vehiculos, se borran y no vuelven a cargar
   //los vehiculos
 
+
+  const fetchVehicles = async () => {
+    await getAllVehicles(
+      (response) => {
+        setAllVehicles(response.data)
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+
+    setDeployQuery(false)
+  }
+
   useEffect(() => {
-    getVehicles()
+    fetchVehicles()
   }, [])
 
-  const getVehicles = async () => {
-    setTodosCarros(await getAllVehicles());
-  }
 
   useEffect(() => {
     if (isClicked) {
@@ -49,12 +61,11 @@ const Vehicles = () => {
         isClicked ? (
           <FormVehicle
             setShowAll={setIsClicked}
-            listVeh={todosCarros}
-            setVechicleList={setTodosCarros} />
+          />
         ) : (
           <TableVehicles
-            listVehiclesBack={todosCarros}
-            setVechicleList={setTodosCarros}
+            allVehicles={allVehicles}
+            fetchVehicles={fetchVehicles}
           />
         )
       }
